@@ -1,0 +1,547 @@
+wordcount
+
+import java.io.*;
+
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+
+import org.apache.hadoop.mapreduce.lib.input.*;
+import org.apache.hadoop.mapreduce.lib.output.*;
+
+public class WordCount {
+
+    public static class MyMapper
+    extends Mapper<Object, Text, Text, IntWritable>{
+
+        private final static IntWritable one =
+                new IntWritable(1);
+
+        public void map(
+                Object key,
+                Text value,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            String line = value.toString();
+
+            String words[] = line.split(" ");
+
+            for(String w : words){
+
+                context.write(
+                        new Text(w),
+                        one
+                );
+            }
+        }
+    }
+
+    public static class MyReducer
+    extends Reducer<Text, IntWritable, Text, IntWritable>{
+
+        public void reduce(
+                Text key,
+                Iterable<IntWritable> values,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            int sum = 0;
+
+            for(IntWritable val : values){
+
+                sum = sum + val.get();
+            }
+
+            context.write(
+                    key,
+                    new IntWritable(sum)
+            );
+        }
+    }
+
+    public static void main(String args[])
+    throws Exception {
+
+        Configuration conf =
+                new Configuration();
+
+        Job job =
+                Job.getInstance(conf, "WordCount");
+
+        job.setJarByClass(WordCount.class);
+
+        job.setMapperClass(MyMapper.class);
+
+        job.setReducerClass(MyReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+
+        job.setOutputValueClass(IntWritable.class);
+
+        FileInputFormat.addInputPath(
+                job,
+                new Path(args[0])
+        );
+
+        FileOutputFormat.setOutputPath(
+                job,
+                new Path(args[1])
+        );
+
+        System.exit(
+                job.waitForCompletion(true) ? 0 : 1
+        );
+    }
+}
+
+Log
+
+import java.io.*;
+
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+
+import org.apache.hadoop.mapreduce.lib.input.*;
+import org.apache.hadoop.mapreduce.lib.output.*;
+
+public class LogFile {
+
+    public static class MyMapper
+    extends Mapper<Object, Text, Text, IntWritable>{
+
+        private final static IntWritable one =
+                new IntWritable(1);
+
+        public void map(
+                Object key,
+                Text value,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            String line = value.toString();
+
+            String arr[] = line.split("\\t");
+
+            String user = arr[1];
+
+            context.write(
+                    new Text(user),
+                    one
+            );
+        }
+    }
+
+    public static class MyReducer
+    extends Reducer<Text, IntWritable, Text, IntWritable>{
+
+        public void reduce(
+                Text key,
+                Iterable<IntWritable> values,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            int total = 0;
+
+            for(IntWritable val : values){
+
+                total = total + val.get();
+            }
+
+            context.write(
+                    key,
+                    new IntWritable(total)
+            );
+        }
+    }
+
+    public static void main(String args[])
+    throws Exception {
+
+        Configuration conf =
+                new Configuration();
+
+        Job job =
+                Job.getInstance(conf, "LogFile");
+
+        job.setJarByClass(LogFile.class);
+
+        job.setMapperClass(MyMapper.class);
+
+        job.setReducerClass(MyReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+
+        job.setOutputValueClass(IntWritable.class);
+
+        FileInputFormat.addInputPath(
+                job,
+                new Path(args[0])
+        );
+
+        FileOutputFormat.setOutputPath(
+                job,
+                new Path(args[1])
+        );
+
+        System.exit(
+                job.waitForCompletion(true) ? 0 : 1
+        );
+    }
+}
+
+Music
+
+import java.io.*;
+import java.util.HashSet;
+
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+
+import org.apache.hadoop.mapreduce.lib.input.*;
+import org.apache.hadoop.mapreduce.lib.output.*;
+
+public class MusicData {
+
+    public static class MyMapper
+    extends Mapper<Object, Text, Text, Text>{
+
+        public void map(
+                Object key,
+                Text value,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            String line = value.toString();
+
+            if(line.startsWith("UserId"))
+                return;
+
+            String arr[] = line.split("\\t");
+
+            String userId = arr[0];
+
+            String trackId = arr[1];
+
+            String shared = arr[2];
+
+            context.write(
+                    new Text(trackId),
+                    new Text(userId + ":" + shared)
+            );
+        }
+    }
+
+    public static class MyReducer
+    extends Reducer<Text, Text, Text, Text>{
+
+        public void reduce(
+                Text key,
+                Iterable<Text> values,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            HashSet<String> users =
+                    new HashSet<String>();
+
+            int sharedCount = 0;
+
+            for(Text val : values){
+
+                String arr[] =
+                        val.toString().split(":");
+
+                users.add(arr[0]);
+
+                sharedCount =
+                        sharedCount +
+                        Integer.parseInt(arr[1]);
+            }
+
+            String result =
+                    "UniqueListeners="
+                    + users.size()
+                    + " SharedCount="
+                    + sharedCount;
+
+            context.write(
+                    key,
+                    new Text(result)
+            );
+        }
+    }
+
+    public static void main(String args[])
+    throws Exception {
+
+        Configuration conf =
+                new Configuration();
+
+        Job job =
+                Job.getInstance(conf, "MusicData");
+
+        job.setJarByClass(MusicData.class);
+
+        job.setMapperClass(MyMapper.class);
+
+        job.setReducerClass(MyReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+
+        job.setOutputValueClass(Text.class);
+
+        FileInputFormat.addInputPath(
+                job,
+                new Path(args[0])
+        );
+
+        FileOutputFormat.setOutputPath(
+                job,
+                new Path(args[1])
+        );
+
+        System.exit(
+                job.waitForCompletion(true) ? 0 : 1
+        );
+    }
+}
+
+Music
+
+import java.io.*;
+
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+
+import org.apache.hadoop.mapreduce.lib.input.*;
+import org.apache.hadoop.mapreduce.lib.output.*;
+
+public class MusicRadioSkip {
+
+    public static class MyMapper
+    extends Mapper<Object, Text, Text, Text>{
+
+        public void map(
+                Object key,
+                Text value,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            String line = value.toString();
+
+            if(line.startsWith("UserId"))
+                return;
+
+            String arr[] = line.split("\\t");
+
+            String trackId = arr[1];
+
+            String radio = arr[3];
+
+            String skip = arr[4];
+
+            context.write(
+                    new Text(trackId),
+                    new Text(radio + ":" + skip)
+            );
+        }
+    }
+
+    public static class MyReducer
+    extends Reducer<Text, Text, Text, Text>{
+
+        public void reduce(
+                Text key,
+                Iterable<Text> values,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            int radioCount = 0;
+
+            int skipCount = 0;
+
+            for(Text val : values){
+
+                String arr[] =
+                        val.toString().split(":");
+
+                radioCount =
+                        radioCount +
+                        Integer.parseInt(arr[0]);
+
+                skipCount =
+                        skipCount +
+                        Integer.parseInt(arr[1]);
+            }
+
+            String result =
+                    "Radio="
+                    + radioCount
+                    + " Skip="
+                    + skipCount;
+
+            context.write(
+                    key,
+                    new Text(result)
+            );
+        }
+    }
+
+    public static void main(String args[])
+    throws Exception {
+
+        Configuration conf =
+                new Configuration();
+
+        Job job =
+                Job.getInstance(conf, "MusicRadioSkip");
+
+        job.setJarByClass(MusicRadioSkip.class);
+
+        job.setMapperClass(MyMapper.class);
+
+        job.setReducerClass(MyReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+
+        job.setOutputValueClass(Text.class);
+
+        FileInputFormat.addInputPath(
+                job,
+                new Path(args[0])
+        );
+
+        FileOutputFormat.setOutputPath(
+                job,
+                new Path(args[1])
+        );
+
+        System.exit(
+                job.waitForCompletion(true) ? 0 : 1
+        );
+    }
+}
+
+Movie
+
+import java.io.*;
+
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+
+import org.apache.hadoop.mapreduce.lib.input.*;
+import org.apache.hadoop.mapreduce.lib.output.*;
+
+public class MovieRating {
+
+    public static class MyMapper
+    extends Mapper<Object, Text, Text, IntWritable>{
+
+        public void map(
+                Object key,
+                Text value,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            String line = value.toString();
+
+            if(line.startsWith("UserId"))
+                return;
+
+            String arr[] = line.split(",");
+
+            String movieId = arr[1];
+
+            int rating =
+                    Integer.parseInt(arr[2]);
+
+            context.write(
+                    new Text(movieId),
+                    new IntWritable(rating)
+            );
+        }
+    }
+
+    public static class MyReducer
+    extends Reducer<Text, IntWritable, Text, FloatWritable>{
+
+        public void reduce(
+                Text key,
+                Iterable<IntWritable> values,
+                Context context)
+
+                throws IOException, InterruptedException {
+
+            int sum = 0;
+
+            int count = 0;
+
+            for(IntWritable val : values){
+
+                sum = sum + val.get();
+
+                count++;
+            }
+
+            float avg =
+                    (float)sum / count;
+
+            context.write(
+                    key,
+                    new FloatWritable(avg)
+            );
+        }
+    }
+
+    public static void main(String args[])
+    throws Exception {
+
+        Configuration conf =
+                new Configuration();
+
+        Job job =
+                Job.getInstance(conf, "MovieRating");
+
+        job.setJarByClass(MovieRating.class);
+
+        job.setMapperClass(MyMapper.class);
+
+        job.setReducerClass(MyReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+
+        job.setOutputValueClass(FloatWritable.class);
+
+        FileInputFormat.addInputPath(
+                job,
+                new Path(args[0])
+        );
+
+        FileOutputFormat.setOutputPath(
+                job,
+                new Path(args[1])
+        );
+
+        System.exit(
+                job.waitForCompletion(true) ? 0 : 1
+        );
+    }
+}
