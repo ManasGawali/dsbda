@@ -1,0 +1,349 @@
+# Dataset Load
+
+Open Tableau
+
+→ Connect:
+
+```text id="8m2q5v"
+Text File / Excel
+```
+
+Load:
+
+```text id="4x1v7p"
+Adult Dataset
+```
+
+---
+
+# Useful Columns
+
+| Purpose   | Column         |
+| --------- | -------------- |
+| Income    | income         |
+| Education | education      |
+| Workclass | workclass      |
+| Country   | native-country |
+| Gender    | sex            |
+| Age       | age            |
+
+---
+
+# a. Income Class of People with Masters & Doctorate
+
+Goal:
+
+```text id="9q5m2r"
+compare income classes
+```
+
+---
+
+## Steps
+
+### 1. Drag `education`
+
+to:
+
+```text id="3v8n1k"
+Filters
+```
+
+Select:
+
+```text id="8r2m5q"
+Masters
+Doctorate
+```
+
+---
+
+### 2. Drag `income`
+
+to:
+
+```text id="2x7v4n"
+Columns
+```
+
+---
+
+### 3. Drag `Number of Records`
+
+to:
+
+```text id="5m1q8p"
+Rows
+```
+
+---
+
+### 4. Choose Bar Chart
+
+Done. ✅
+
+---
+
+# b. Income Class of People Having Private Jobs
+
+---
+
+## Steps
+
+### 1. Drag `workclass`
+
+to:
+
+```text id="9v4m2x"
+Filters
+```
+
+Select:
+
+```text id="3n7q1v"
+Private
+```
+
+---
+
+### 2. Drag `income`
+
+to:
+
+```text id="6x2m5q"
+Columns
+```
+
+---
+
+### 3. Drag `Number of Records`
+
+to:
+
+```text id="7m1q4x"
+Rows
+```
+
+Done. ✅
+
+---
+
+# c. Yearly Sales Comparison
+
+Adult dataset has NO sales/year.
+
+So examiner usually expects:
+
+```text id="2v8m5r"
+year-wise count/income comparison
+```
+
+If no year column:
+Use:
+
+```text id="9q4m1x"
+age distribution instead
+```
+
+OR skip politely.
+
+If dataset contains year/date:
+
+* YEAR(Date) → Columns
+* Number of Records → Rows
+* Line chart
+
+---
+
+# d. Country Wise Statistics on Geospatial Graph
+
+---
+
+## Steps
+
+### 1. Double-click `native-country`
+
+Tableau auto-creates map.
+
+---
+
+### 2. Drag `Number of Records`
+
+to:
+
+```text id="5r1m8q"
+Color
+```
+
+Done. ✅
+
+Country density shown on map.
+
+---
+
+# e. Agewise Education vs Salary Statistics
+
+Goal:
+
+```text id="4x7m1q"
+relationship between age and income
+```
+
+Best graph:
+
+```text id="8m2q5v"
+Scatter Plot
+```
+
+---
+
+## Steps
+
+### 1. Drag `age`
+
+to:
+
+```text id="4x1v7p"
+Columns
+```
+
+---
+
+### 2. Drag `education-num`
+
+to:
+
+```text id="9q5m2r"
+Rows
+```
+
+---
+
+### 3. Drag `income`
+
+to:
+
+```text id="3v8n1k"
+Color
+```
+
+Done. ✅
+
+---
+
+# f. Countrywise Male Female Ratio
+
+Best:
+
+```text id="8r2m5q"
+Stacked Bar Chart
+```
+
+---
+
+## Steps
+
+### 1. Drag `native-country`
+
+to:
+
+```text id="2x7v4n"
+Rows
+```
+
+---
+
+### 2. Drag `Number of Records`
+
+to:
+
+```text id="5m1q8p"
+Columns
+```
+
+---
+
+### 3. Drag `sex`
+
+to:
+
+```text id="9v4m2x"
+Color
+```
+
+Done. ✅
+
+---
+
+# g. Income Class Based on Workclass
+
+(Government vs Other)
+
+---
+
+# Step 1 — Create Calculated Field
+
+Name:
+
+```text id="3n7q1v"
+WorkClassGroup
+```
+
+Formula:
+
+```text id="6x2m5q"
+IF CONTAINS([workclass],"gov")
+THEN "Government"
+ELSE "Other"
+END
+```
+
+---
+
+# Step 2
+
+Drag:
+
+```text id="7m1q4x"
+WorkClassGroup
+```
+
+to:
+
+```text id="2v8m5r"
+Columns
+```
+
+---
+
+# Step 3
+
+Drag:
+
+```text id="9q4m1x"
+Number of Records
+```
+
+to:
+
+```text id="5r1m8q"
+Rows
+```
+
+---
+
+# Step 4
+
+Drag:
+
+```text id="4x7m1q"
+income
+```
+
+to:
+
+```text id="8m2q5v"
+Color
+```
+
+Done. ✅

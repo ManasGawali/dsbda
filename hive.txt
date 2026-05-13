@@ -1,0 +1,662 @@
+# START HIVE
+
+```sql id="8m2q5v"
+hive
+```
+
+---
+
+# CREATE DATABASE
+
+```sql id="4x1v7p"
+CREATE DATABASE dsbda;
+```
+
+---
+
+# SHOW DATABASES
+
+```sql id="9q5m2r"
+SHOW DATABASES;
+```
+
+---
+
+# USE DATABASE
+
+```sql id="3v8n1k"
+USE dsbda;
+```
+
+---
+
+# SHOW TABLES
+
+```sql id="8r2m5q"
+SHOW TABLES;
+```
+
+---
+
+# DESCRIBE TABLE
+
+```sql id="2x7v4n"
+DESCRIBE table_name;
+```
+
+---
+
+# DROP TABLE
+
+```sql id="5m1q8p"
+DROP TABLE table_name;
+```
+
+---
+
+# =========================================
+
+# FLIGHT INFORMATION SYSTEM
+
+# =========================================
+
+# CREATE TABLE
+
+```sql id="9v4m2x"
+CREATE TABLE flight_info(
+
+flight_id INT,
+
+flight_name STRING,
+
+delay INT
+
+);
+```
+
+---
+
+# INSERT DATA
+
+```sql id="3n7q1v"
+INSERT INTO flight_info
+VALUES
+(101,'AirIndia',20),
+(102,'Indigo',10),
+(103,'SpiceJet',30);
+```
+
+---
+
+# VIEW DATA
+
+```sql id="6x2m5q"
+SELECT * FROM flight_info;
+```
+
+---
+
+# ALTER TABLE
+
+```sql id="7m1q4x"
+ALTER TABLE flight_info
+ADD COLUMNS(status STRING);
+```
+
+---
+
+# TOTAL DELAY
+
+```sql id="2v8m5r"
+SELECT SUM(delay)
+FROM flight_info;
+```
+
+---
+
+# AVERAGE DELAY
+
+```sql id="9q4m1x"
+SELECT AVG(delay)
+FROM flight_info;
+```
+
+---
+
+# CREATE INDEX
+
+```sql id="5r1m8q"
+CREATE INDEX flight_index
+ON TABLE flight_info(flight_name)
+
+AS 'COMPACT'
+WITH DEFERRED REBUILD;
+```
+
+---
+
+# REBUILD INDEX
+
+```sql id="4x7m1q"
+ALTER INDEX flight_index
+ON flight_info
+REBUILD;
+```
+
+---
+
+# =========================================
+
+# CUSTOMER INFORMATION SYSTEM
+
+# =========================================
+
+# CREATE CUSTOMER TABLE
+
+```sql id="8m2q5v"
+CREATE TABLE customer_info(
+
+cust_id INT,
+
+cust_name STRING,
+
+order_id INT
+
+);
+```
+
+---
+
+# CREATE ORDER TABLE
+
+```sql id="4x1v7p"
+CREATE TABLE order_info(
+
+order_id INT,
+
+item_id INT,
+
+quantity INT
+
+);
+```
+
+---
+
+# CREATE ITEM TABLE
+
+```sql id="9q5m2r"
+CREATE TABLE item_info(
+
+item_id INT,
+
+item_name STRING,
+
+item_price INT
+
+);
+```
+
+---
+
+# INSERT CUSTOMER DATA
+
+```sql id="3v8n1k"
+INSERT INTO customer_info
+VALUES
+(1,'Manas',101),
+(2,'Rahul',102),
+(3,'Amit',103);
+```
+
+---
+
+# INSERT ORDER DATA
+
+```sql id="8r2m5q"
+INSERT INTO order_info
+VALUES
+(101,201,2),
+(102,202,1),
+(103,203,5);
+```
+
+---
+
+# INSERT ITEM DATA
+
+```sql id="2x7v4n"
+INSERT INTO item_info
+VALUES
+(201,'Laptop',50000),
+(202,'Mobile',20000),
+(203,'Keyboard',1000);
+```
+
+---
+
+# JOIN QUERY
+
+```sql id="5m1q8p"
+SELECT
+
+c.cust_name,
+
+o.order_id,
+
+i.item_name,
+
+o.quantity,
+
+i.item_price
+
+FROM customer_info c
+
+JOIN order_info o
+
+ON c.order_id = o.order_id
+
+JOIN item_info i
+
+ON o.item_id = i.item_id;
+```
+
+---
+
+# TOTAL SALES
+
+```sql id="9v4m2x"
+SELECT
+SUM(o.quantity * i.item_price)
+
+FROM order_info o
+
+JOIN item_info i
+
+ON o.item_id = i.item_id;
+```
+
+---
+
+# AVERAGE SALES
+
+```sql id="3n7q1v"
+SELECT
+AVG(o.quantity * i.item_price)
+
+FROM order_info o
+
+JOIN item_info i
+
+ON o.item_id = i.item_id;
+```
+
+---
+
+# MAXIMUM COST ORDER
+
+```sql id="6x2m5q"
+SELECT
+
+o.order_id,
+
+i.item_name,
+
+(o.quantity * i.item_price) AS total_cost
+
+FROM order_info o
+
+JOIN item_info i
+
+ON o.item_id = i.item_id
+
+ORDER BY total_cost DESC
+
+LIMIT 1;
+```
+
+---
+
+# CREATE INDEX
+
+```sql id="7m1q4x"
+CREATE INDEX customer_index
+
+ON TABLE customer_info(cust_name)
+
+AS 'COMPACT'
+
+WITH DEFERRED REBUILD;
+```
+
+---
+
+# REBUILD INDEX
+
+```sql id="2v8m5r"
+ALTER INDEX customer_index
+ON customer_info
+REBUILD;
+```
+
+---
+
+# =========================================
+
+# ONLINE RETAIL
+
+# =========================================
+
+# CREATE TABLE
+
+```sql id="9q4m1x"
+CREATE TABLE online_retail(
+
+invoice_no STRING,
+
+description STRING,
+
+quantity INT,
+
+unit_price FLOAT,
+
+customer_id INT,
+
+country STRING
+
+);
+```
+
+---
+
+# INSERT DATA
+
+```sql id="5r1m8q"
+INSERT INTO online_retail
+VALUES
+
+('1001','Laptop',2,50000,101,'India'),
+
+('1002','Mobile',1,20000,102,'USA'),
+
+('1003','Keyboard',5,1000,103,'India'),
+
+('1004','Mouse',3,500,101,'Canada');
+```
+
+---
+
+# VIEW DATA
+
+```sql id="4x7m1q"
+SELECT * FROM online_retail;
+```
+
+---
+
+# TOTAL SALES
+
+```sql id="8m2q5v"
+SELECT
+SUM(quantity * unit_price)
+AS total_sales
+
+FROM online_retail;
+```
+
+---
+
+# AVERAGE SALES
+
+```sql id="4x1v7p"
+SELECT
+AVG(quantity * unit_price)
+AS average_sales
+
+FROM online_retail;
+```
+
+---
+
+# MAXIMUM COST ORDER
+
+```sql id="9q5m2r"
+SELECT
+
+invoice_no,
+
+description,
+
+(quantity * unit_price)
+AS total_cost
+
+FROM online_retail
+
+ORDER BY total_cost DESC
+
+LIMIT 1;
+```
+
+---
+
+# CUSTOMER WITH MAXIMUM TOTAL
+
+```sql id="3v8n1k"
+SELECT
+
+customer_id,
+
+SUM(quantity * unit_price)
+AS order_total
+
+FROM online_retail
+
+GROUP BY customer_id
+
+ORDER BY order_total DESC
+
+LIMIT 1;
+```
+
+---
+
+# COUNTRY WITH MAXIMUM SALE
+
+```sql id="8r2m5q"
+SELECT
+
+country,
+
+SUM(quantity * unit_price)
+AS total_sale
+
+FROM online_retail
+
+GROUP BY country
+
+ORDER BY total_sale DESC
+
+LIMIT 1;
+```
+
+---
+
+# COUNTRY WITH MINIMUM SALE
+
+```sql id="2x7v4n"
+SELECT
+
+country,
+
+SUM(quantity * unit_price)
+AS total_sale
+
+FROM online_retail
+
+GROUP BY country
+
+ORDER BY total_sale ASC
+
+LIMIT 1;
+```
+
+---
+
+# CREATE INDEX
+
+```sql id="5m1q8p"
+CREATE INDEX retail_index
+
+ON TABLE online_retail(description)
+
+AS 'COMPACT'
+
+WITH DEFERRED REBUILD;
+```
+
+---
+
+# REBUILD INDEX
+
+```sql id="9v4m2x"
+ALTER INDEX retail_index
+ON online_retail
+REBUILD;
+```
+
+---
+
+# =========================================
+
+# HBASE COMMANDS
+
+# =========================================
+
+# START HBASE
+
+```bash id="3n7q1v"
+hbase shell
+```
+
+---
+
+# CREATE TABLE
+
+```ruby id="6x2m5q"
+create 'table_name',
+'info'
+```
+
+---
+
+# LIST TABLES
+
+```ruby id="7m1q4x"
+list
+```
+
+---
+
+# INSERT RECORD
+
+```ruby id="2v8m5r"
+put 'table_name',
+'1',
+'info:name',
+'Manas'
+```
+
+---
+
+# VIEW RECORDS
+
+```ruby id="9q4m1x"
+scan 'table_name'
+```
+
+---
+
+# GET SINGLE ROW
+
+```ruby id="5r1m8q"
+get 'table_name','1'
+```
+
+---
+
+# DELETE RECORD
+
+```ruby id="4x7m1q"
+delete 'table_name',
+'1',
+'info:name'
+```
+
+---
+
+# DISABLE TABLE
+
+```ruby id="8m2q5v"
+disable 'table_name'
+```
+
+---
+
+# DROP TABLE
+
+```ruby id="4x1v7p"
+drop 'table_name'
+```
+
+---
+
+# EXIT HBASE
+
+```ruby id="9q5m2r"
+exit
+```
+
+---
+
+# =========================================
+
+# EXTERNAL HIVE TABLE CONNECTED TO HBASE
+
+# =========================================
+
+```sql id="3v8n1k"
+CREATE EXTERNAL TABLE hive_table(
+
+key STRING,
+
+name STRING,
+
+value STRING
+
+)
+
+STORED BY
+'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+
+WITH SERDEPROPERTIES(
+
+"hbase.columns.mapping"=
+":key,info:name,info:value"
+
+)
+
+TBLPROPERTIES(
+
+"hbase.table.name"="table_name"
+
+);
+```
+
+---
+
+# VERIFY CONNECTION
+
+```sql id="8r2m5q"
+SELECT *
+FROM hive_table;
+```
